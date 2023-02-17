@@ -1,3 +1,4 @@
+import copy
 import enum
 import random
 
@@ -12,34 +13,54 @@ lenWords = len(words) - 1
 
 # create an enumeration for the different states of each letter
 class guessState(enum.Enum):
-    Empty = 0
-    Wrong = 1
-    Partial = 2
-    Correct = 3
+    Empty = '_'
+    Wrong = '!'
+    Partial = '*'
+    Correct = '#'
 
 # create a game state using an object
+# TODO: add check to show all letters used
 class gamestate(object):
-    def __init__(self, l1=None, l1state=None, l2=None, l2state=None, l3=None, l3state=None, l4=None, l4state=None, l5=None, l5state=None):
+    def __init__(self):
         self.guesses = 0
         self.wordToGuess = words[random.randint(0, lenWords)]
-        self.l1 = l1
-        self.l1state = guessState(guessState.Empty)
-        self.l2 = l2
-        self.l2state = guessState(guessState.Empty)
-        self.l3 = l3
-        self.l3state = guessState(guessState.Empty)
-        self.l4 = l4
-        self.l4state = guessState(guessState.Empty)
-        self.l5 = l5
-        self.l6state = guessState(guessState.Empty)
+        self.states = [guessState.Empty] * 5
 
-# initialize a new game
-initialState = gamestate()
+def startGame():
+    # initialize a new game
+    initialState = gamestate()
+    guessHistory = []
+    showGameState(initialState, guessHistory)
 
 # print out the game information
-def showGameState():
-    print(initialState.guesses)
-    print(initialState.wordToGuess)
+def showGameState(initialState, guessHistory):
+    print('Guesses so far: ', initialState.guesses)
+    userGuess = input('Please guess a new five letter word!\n')
+    # TODO: insert word validity checks and a check if someone guesses something that isnt in the word set
+    currentGuess = list(userGuess)
+    # print(currentGuess, initialState.wordToGuess)
 
-showGameState()
+    # Check if the guesses are right and label the letters according to their guesses
+    # currently the enumeration has no use but can be used in the future
+    for i in range(5):
+        letter = currentGuess[i]
+        if letter == initialState.wordToGuess[i]:
+            initialState.states[i] = guessState.Correct
+            currentGuess[i] = '#' + currentGuess[i]
+        else:
+            if letter in initialState.wordToGuess:
+                initialState.states[i] = guessState.Partial
+                currentGuess[i] = '*' + currentGuess[i]
+            else:
+                initialState.states[i] = guessState.Wrong
+                currentGuess[i] = '!' + currentGuess[i]
+        # print('hi', initialState.states[i])
+    
+    print('You guessed:', userGuess)
+    print('# indicates a correct letter placement, * represents that the letter is in the word but not in that spot, and ! means the letter isn\'t in the word')
+    print(currentGuess)
+    guessHistory.append(currentGuess)
+
+# start a new game
+startGame()
         
