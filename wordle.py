@@ -12,6 +12,7 @@ words = ['aback', 'abase', 'abate', 'abbey', 'abbot', 'abhor', 'abide', 'abled',
 lenWords = len(words) - 1
 
 # create an enumeration for the different states of each letter
+# can be an array in haskell
 class guessState(enum.Enum):
     Empty = '_'
     Wrong = '!'
@@ -30,7 +31,24 @@ def startGame():
     # initialize a new game
     initialState = gamestate()
     guessHistory = []
-    showGameState(initialState, guessHistory)
+    while gameUnsolved(initialState):
+        userGuess = input('Enter 1 to guess word, 2 to see guess history, or 3 for a hint \n')
+        if userGuess == "1":
+            showGameState(initialState, guessHistory)
+        if userGuess == "2":
+            for gh in guessHistory:
+                print(gh)
+        if userGuess == "3":
+            # TODO: Add hints
+            print('Unfortunately, hints are currently not available')
+
+    print("Congrats! Your guess was correct!")
+
+def gameUnsolved(states):
+    for state in states.states:
+        if not state == guessState.Correct:
+            return True
+    return False
 
 # print out the game information
 def showGameState(initialState, guessHistory):
@@ -41,7 +59,6 @@ def showGameState(initialState, guessHistory):
     # print(currentGuess, initialState.wordToGuess)
 
     # Check if the guesses are right and label the letters according to their guesses
-    # currently the enumeration has no use but can be used in the future
     for i in range(5):
         letter = currentGuess[i]
         if letter == initialState.wordToGuess[i]:
