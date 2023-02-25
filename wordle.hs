@@ -15,12 +15,12 @@ import System.Random
 -- If 'Could not find module `System.Random`
 --    brew install haskell-stack
 --    stack install random
---    stack ghci 
+--    stack ghci --package random
 --    :load wordle
 --    play
 
 --- Retrieving a random word from our words.txt ---
-wordFilePath = "/Users/andrew/Documents/GitHub/cpsc312-project-1/words.txt"
+wordFilePath = "./words.txt"
 randomWord :: FilePath -> IO [String]
 randomWord path = do
   contents <- readFile path
