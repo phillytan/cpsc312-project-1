@@ -28,9 +28,19 @@ randomWord path = do
 
 
 --- Check correctness of word and give feedback --- 
-wordle :: String -> String
-wordle = reverse
-
+--- Given the wordToGuess and the userGuess
+--- Return "Correct" if the string is an exact match
+--- Otherwise, append # to correct letters, append * to partial correct, append ! to incorrect
+--- E.g.
+---   about apple --> "a# p! p! l! e!"
+---   apple apple --> "Correct"
+stringsMatch :: String -> String -> String
+stringsMatch wordToGuess userGuess = do
+   if wordToGuess == userGuess
+      then "Correct"
+      else "TODO TEST"
+         --- Implement this part according to the spec above
+         
 
 --- Main game function, creates a game object with a random word, enters into a while loop of guessing until correct ---
 play :: IO ()
@@ -47,7 +57,47 @@ play = do
   putStrLn "The word to guess is"
   putStrLn wordToGuess
 
-  -- Initiate the game
+  wordle wordToGuess
 
-  putStrLn "Done for now"
+  putStrLn "Thank you for playing!"
+
+wordle :: String -> IO()
+wordle wordToGuess = do
+  let guessHistory = ["Test Guess 1", "Test Guess 2", "Test Guess 3"]
+  -- Initiate the game
+  putStrLn "Enter 1 to guess a word"
+  putStrLn "Enter 2 to see guess history"
+  putStrLn "Enter 3 to get a hint"
+  userChoice <- getLine
+  if userChoice == "1"
+      then do
+         putStrLn "Please guess a five letter word"
+         guess <- getLine
+         let result = stringsMatch wordToGuess guess
+         if result == "Correct"
+            then do
+               putStrLn "Congrats, you have solved the wordle!"
+            else do
+               -- TODO: Add result to guessHistory
+               wordle wordToGuess -- Recursive call
+      else if userChoice == "2"
+         then do
+            putStrLn "Here are your previous guesses"
+            -- TODO: 
+            -- Loop through guessHistory, print each guess. 
+            -- Everytime we guess something, add the result (e.g. a* b# o! u! t!) to guessHistory
+            mapM_ print guessHistory
+            wordle wordToGuess -- Recursive call
+         else do
+            putStrLn "Here is your hint"
+            -- TODO:
+            -- Implement hints
+            generateHints wordToGuess
+            wordle wordToGuess -- Recursive call
+
+
+-- TODO: Give the user a hint depending on the word to guess
+generateHints :: String -> IO()
+generateHints wordToGuess = do
+  putStrLn "TODO ADD HINTS"
 
