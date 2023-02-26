@@ -38,7 +38,7 @@ randomWord path = do
 ---   apple apple --> "Correct"
 stringsMatch :: String -> String -> String
 stringsMatch wordToGuess userGuess
-  | wordToGuess == userGuess = "Correct"
+  | wordToGuess == userGuess = "\ESC[42mCorrect\ESC[0m"
   | otherwise = stringsCompare wordToGuess userGuess (wordToGuess `intersect` userGuess)
 
 -- Recursive helper function to give feedback
@@ -47,9 +47,9 @@ stringsMatch wordToGuess userGuess
 stringsCompare :: String -> String -> String -> String
 stringsCompare [] [] _ = []
 stringsCompare (w : ws) (u : us) intersection
-  | w == u = u : '#' : ' ' : stringsCompare ws us intersection
-  | u `elem` intersection = u : '*' : ' ' : stringsCompare ws us intersection
-  | otherwise = u : '!' : ' ' : stringsCompare ws us intersection
+  | w == u = '\ESC':'[':'4':'2':'m':u:'\ESC':'[':'0':'m' : stringsCompare ws us intersection
+  | u `elem` intersection = '\ESC':'[':'4':'3':'m':u:'\ESC':'[':'0':'m' : stringsCompare ws us intersection
+  | otherwise = '\ESC':'[':'4':'0':'m':u:'\ESC':'[':'0':'m' : stringsCompare ws us intersection
 
 --- Implement this part according to the spec above
 
@@ -66,7 +66,7 @@ play = do
   let guessHistory = []
 
   -- FOR DEBUGGING AND DEVELOPING ONLY, REMOVE LATER
-  putStrLn ("The word to guess is: " ++ show wordToGuess)
+  -- putStrLn ("The word to guess is: \ESC[40m" ++ show wordToGuess ++ "\ESC[0m")
 
   wordle wordToGuess guessHistory
 
@@ -84,9 +84,9 @@ wordle wordToGuess guessHistory = do
       putStrLn "Please guess a five letter word"
       guess <- getLine
       let result = stringsMatch wordToGuess guess
-      if result == "Correct"
+      if result == "\ESC[42mCorrect\ESC[0m"
         then do
-          putStrLn "Congrats, you have solved the wordle!"
+          putStrLn "\ESC[42mCongrats, you have solved the wordle!\ESC[0m"
         else do
           -- Add result to guessHistory
           putStrLn result
@@ -95,15 +95,12 @@ wordle wordToGuess guessHistory = do
       if userChoice == "2"
         then do
           putStrLn "Here are your previous guesses"
-          -- TODO:
           -- Loop through guessHistory, print each guess.
           -- Everytime we guess something, add the result (e.g. a* b# o! u! t!) to guessHistory
           mapM_ putStrLn guessHistory
           wordle wordToGuess guessHistory -- Recursive call
         else do
           putStrLn "Here is your hint"
-          -- TODO:
-          -- Implement hints
           generateHints wordToGuess
           wordle wordToGuess guessHistory -- Recursive call
 
@@ -125,7 +122,6 @@ countConsonants word = do
   let count = foldr (\currentLetter prev -> if isVowel currentLetter then prev else prev + 1) 0 word
   return count
 
--- TODO: Give the user a hint depending on the word to guess
 generateHints :: String -> IO ()
 generateHints wordToGuess = do
   vowels <- countVowels wordToGuess
