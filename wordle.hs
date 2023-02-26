@@ -66,8 +66,7 @@ play = do
   let guessHistory = []
 
   -- FOR DEBUGGING AND DEVELOPING ONLY, REMOVE LATER
-  putStrLn "The word to guess is"
-  putStrLn wordToGuess
+  putStrLn ("The word to guess is: " ++ show wordToGuess)
 
   wordle wordToGuess guessHistory
 
@@ -113,7 +112,26 @@ updateHistory :: String -> [String] -> [String]
 updateHistory result [] = [result]
 updateHistory result guessHistory = guessHistory ++ [result]
 
+vowels = ['a','e','i','o','u']
+isVowel::Char -> Bool
+isVowel c = foldr (\ currentLetter prev -> prev || currentLetter == c) False vowels
+
+countVowels :: String -> IO Int
+countVowels word = do
+  let count = foldr (\ currentLetter prev -> if isVowel currentLetter then prev + 1 else prev) 0 word
+  return count
+countConsonants :: String -> IO Int
+countConsonants word = do
+  let count = foldr (\currentLetter prev -> if isVowel currentLetter then prev else prev + 1) 0 word
+  return count
+
 -- TODO: Give the user a hint depending on the word to guess
 generateHints :: String -> IO ()
 generateHints wordToGuess = do
-  putStrLn "TODO ADD HINTS"
+  vowels <- countVowels wordToGuess
+  consonants <- countConsonants wordToGuess
+  if vowels > consonants
+    then do
+      putStrLn ("Your Hint: There are " ++ (show vowels ++ " vowels in the word."))
+    else do
+      putStrLn ("Your Hint: There are " ++ (show consonants ++ " consonants in the word."))
